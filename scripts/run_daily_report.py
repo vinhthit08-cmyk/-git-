@@ -74,6 +74,7 @@ def main() -> int:
     env = os.environ.copy()
     auth_key = env.get("IAPIBOX_API_KEY") or env.get("OPENAI_API_KEY")
     if auth_key:
+        env["OPENAI_API_KEY"] = auth_key
         login = subprocess.run(
             ["codex", "login", "--with-api-key"],
             input=auth_key.encode("utf-8"),

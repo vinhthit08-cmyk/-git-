@@ -15,6 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       IAPIBOX_API_KEY: ${{ secrets.IAPIBOX_API_KEY }}
+      OPENAI_API_KEY: ${{ secrets.IAPIBOX_API_KEY }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
