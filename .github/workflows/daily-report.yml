@@ -13,6 +13,8 @@ permissions:
 jobs:
   build-report:
     runs-on: ubuntu-latest
+    env:
+      IAPIBOX_API_KEY: ${{ secrets.IAPIBOX_API_KEY }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -31,8 +33,6 @@ jobs:
         run: npm install -g @openai/codex@0.140.0
 
       - name: Run Codex login
-        env:
-          IAPIBOX_API_KEY: ${{ secrets.IAPIBOX_API_KEY }}
         run: printenv IAPIBOX_API_KEY | codex login --with-api-key
 
       - name: Generate report
