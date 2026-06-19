@@ -3,6 +3,8 @@ from __future__ import annotations
 import datetime as dt
 import os
 import subprocess
+import sys
+import time
 from pathlib import Path
 from tomllib import load as load_toml
 
@@ -10,6 +12,8 @@ from tomllib import load as load_toml
 ROOT = Path(__file__).resolve().parents[1]
 AUTOMATION = ROOT / "automation.toml"
 OUTPUT_DIR = ROOT / "outputs"
+MAX_ATTEMPTS = 3
+RETRY_DELAY_SECONDS = 20
 
 CODEX_PROVIDER_CONFIG = [
     "-c",
@@ -78,9 +82,30 @@ def main() -> int:
     env["IAPIBOX_API_KEY"] = auth_key
     env["OPENAI_API_KEY"] = auth_key
 
-    proc = subprocess.run(cmd, cwd=str(ROOT), env=env, check=False)
-    if proc.returncode != 0:
-        return proc.returncode
+    for attempt in range(1, MAX_ATTEMPTS + 1):
+        proc = subprocess.run(
+            cmd,
+            cwd=str(ROOT),
+            env=env,
+            check=False,
+            capture_output=True,
+            text=True,
+        )
+
+        if proc.stdout:
+            sys.stdout.write(proc.stdout)
+        if proc.stderr:
+            sys.stderr.write(proc.stderr)
+
+        if proc.returncode == 0:
+            break
+
+        combined_output = f"{proc.stdout}\n{proc.stderr}".lower()
+        retryable = "503" in combined_output or "service unavailable" in combined_output
+        if not retryable or attempt == MAX_ATTEMPTS:
+            return proc.returncode
+
+        time.sleep(RETRY_DELAY_SECONDS * attempt)
 
     dated = OUTPUT_DIR / f"{today}.md"
     if last_message.exists():
