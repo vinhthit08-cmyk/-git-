@@ -33,9 +33,6 @@ jobs:
       - name: Install Codex CLI
         run: npm install -g @openai/codex@0.140.0
 
-      - name: Run Codex login
-        run: printenv IAPIBOX_API_KEY | codex login --with-api-key
-
       - name: Generate report
         run: python scripts/run_daily_report.py
 

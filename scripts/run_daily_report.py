@@ -3,7 +3,6 @@ from __future__ import annotations
 import datetime as dt
 import os
 import subprocess
-import sys
 from pathlib import Path
 from tomllib import load as load_toml
 
@@ -73,17 +72,11 @@ def main() -> int:
 
     env = os.environ.copy()
     auth_key = env.get("IAPIBOX_API_KEY") or env.get("OPENAI_API_KEY")
-    if auth_key:
-        env["OPENAI_API_KEY"] = auth_key
-        login = subprocess.run(
-            ["codex", "login", "--with-api-key"],
-            input=auth_key.encode("utf-8"),
-            cwd=str(ROOT),
-            env=env,
-            check=False,
-        )
-        if login.returncode != 0:
-            raise RuntimeError("codex login --with-api-key 失败")
+    if not auth_key:
+        raise RuntimeError("缺少 IAPIBOX_API_KEY / OPENAI_API_KEY")
+
+    env["IAPIBOX_API_KEY"] = auth_key
+    env["OPENAI_API_KEY"] = auth_key
 
     proc = subprocess.run(cmd, cwd=str(ROOT), env=env, check=False)
     if proc.returncode != 0:
