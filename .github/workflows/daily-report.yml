@@ -20,6 +20,13 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Verify iapibox secret
+        run: |
+          if [ -z "$IAPIBOX_API_KEY" ]; then
+            echo "Missing repository secret IAPIBOX_API_KEY"
+            exit 1
+          fi
+
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
@@ -34,7 +41,7 @@ jobs:
         run: npm install -g @openai/codex@0.140.0
 
       - name: Run Codex login
-        run: printenv OPENAI_API_KEY | codex login --with-api-key
+        run: printenv IAPIBOX_API_KEY | codex login --with-api-key
 
       - name: Generate report
         run: python scripts/run_daily_report.py
