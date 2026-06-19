@@ -32,12 +32,10 @@ jobs:
 
       - name: Run Codex login
         env:
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-        run: printenv OPENAI_API_KEY | codex login --with-api-key
+          IAPIBOX_API_KEY: ${{ secrets.IAPIBOX_API_KEY }}
+        run: printenv IAPIBOX_API_KEY | codex login --with-api-key
 
       - name: Generate report
-        env:
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
         run: python scripts/run_daily_report.py
 
       - name: Commit report

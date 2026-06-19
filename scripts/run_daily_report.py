@@ -12,6 +12,31 @@ ROOT = Path(__file__).resolve().parents[1]
 AUTOMATION = ROOT / "automation.toml"
 OUTPUT_DIR = ROOT / "outputs"
 
+CODEX_PROVIDER_CONFIG = [
+    "-c",
+    'model_provider="iapiboxcode"',
+    "-c",
+    'model="gpt-5.5"',
+    "-c",
+    'model_reasoning_effort="high"',
+    "-c",
+    'network_access="enabled"',
+    "-c",
+    'disable_response_storage=true',
+    "-c",
+    'windows_wsl_setup_acknowledged=true',
+    "-c",
+    'model_verbosity="high"',
+    "-c",
+    'model_providers.iapiboxcode.name="iapiboxcode"',
+    "-c",
+    'model_providers.iapiboxcode.base_url="https://www.iapibox.com/t/iapiboxcode/v1"',
+    "-c",
+    'model_providers.iapiboxcode.wire_api="responses"',
+    "-c",
+    'model_providers.iapiboxcode.requires_openai_auth=true',
+]
+
 
 def read_prompt() -> str:
     with AUTOMATION.open("rb") as f:
@@ -34,6 +59,7 @@ def main() -> int:
 
     cmd = [
         "codex",
+        *CODEX_PROVIDER_CONFIG,
         "--search",
         "--sandbox",
         "workspace-write",
@@ -46,10 +72,11 @@ def main() -> int:
     ]
 
     env = os.environ.copy()
-    if env.get("OPENAI_API_KEY"):
+    auth_key = env.get("IAPIBOX_API_KEY") or env.get("OPENAI_API_KEY")
+    if auth_key:
         login = subprocess.run(
             ["codex", "login", "--with-api-key"],
-            input=env["OPENAI_API_KEY"].encode("utf-8"),
+            input=auth_key.encode("utf-8"),
             cwd=str(ROOT),
             env=env,
             check=False,

@@ -35,7 +35,7 @@
 
 ## 需要配置的环境变量
 
-- `OPENAI_API_KEY`：Codex CLI 登录用
+- `IAPIBOX_API_KEY`：Codex CLI 登录用
 - `REPORT_ISSUE_NUMBER`：可选。设置后，Workflow 会把日报摘要写到该 Issue 评论里，便于手机推送
 
 ## 下一步
@@ -46,4 +46,3 @@
 - 首次提交
 - 远程地址配置
 - GitHub Actions 推送回写
-
